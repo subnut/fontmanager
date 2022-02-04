@@ -1,0 +1,40 @@
+#!/bin/sh
+export FONTDIR="$HOME/.fonts"
+
+[ $# -eq 0 ] || exit
+[ -f "$FONTDIR" ] || mkdir "$FONTDIR"
+cd "$(dirname "$0")"
+
+case $1 in
+  check)
+    for module in modules/*; do
+      sh $module check || echo "$(basename $(dirname $module)) needs updating"
+    done
+    exit;;
+
+  update)
+    for module in modules/*; do
+      sh $module update
+    done
+    exit;;
+
+  install|uninstall)
+    [ -f "modules/$2" ] || {
+      echo Font not recognized >&2
+      exit 1
+    }
+    sh "modules/$2" $1
+    exit;;
+
+  install-all|uninstall-all)
+    for module in modules/*; do
+      sh $module ${1#-all}
+    done
+    exit;;
+
+  *)
+    echo Invalid command >&2
+    exit 1;;
+esac
+
+# vim: et sw=2 sts=2 ts=2 ft=sh
