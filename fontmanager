@@ -1,9 +1,20 @@
 #!/bin/sh
+[ $# -eq 0 ] || exit
+cd "$(dirname "$0")"
+
+
+## Config
 export FONTDIR="$HOME/.fonts"
 
-[ $# -eq 0 ] || exit
+
+## Dependencies
 [ -f "$FONTDIR" ] || mkdir "$FONTDIR"
-cd "$(dirname "$0")"
+command -v jq >/dev/null || {
+  echo >&2 "jq: command not found"
+  echo >&2 "Please install jq"
+  return 127
+}
+
 
 case $1 in
   check)
