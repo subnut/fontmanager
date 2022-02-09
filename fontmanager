@@ -1,5 +1,5 @@
 #!/bin/sh
-[ $# -eq 0 ] || exit
+[ $# -eq 0 ] && exit
 cd "$(dirname "$0")"
 
 
@@ -8,7 +8,7 @@ export FONTDIR="$HOME/.fonts"
 
 
 ## Dependencies
-[ -f "$FONTDIR" ] || mkdir "$FONTDIR"
+[ -d "$FONTDIR" ] || mkdir "$FONTDIR"
 command -v jq >/dev/null || {
   echo >&2 "jq: command not found"
   echo >&2 "Please install jq"
