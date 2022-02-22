@@ -1,15 +1,10 @@
-#!/bin/sh
-NAME="$(basename "$0")"
-FONTDIR="$BASEDIR/$NAME"
+. common.lib
 
 URL='https://api.github.com/repos/arrowtype/recursive/releases/latest'
 RESPONSE="$(curl -sSL "$URL")"
 
 LATEST="$(printf '%s\n' "$RESPONSE" | jq .id)"
 TAGNAME="$(printf '%s\n' "$RESPONSE" | jq -r '.tag_name')"
-
-untrap() { trap -           INT HUP TERM; }
-ontrap() { trap "$*; exit"  INT HUP TERM; }
 
 check() {
     [ ! -d "$FONTDIR" ] && {
@@ -42,22 +37,5 @@ install() {
     untrap
 }
 
-uninstall() {
-    rm -R "$FONTDIR"
-}
-
-update() {
-    check >/dev/null
-    [ $? -eq 2 ] || uninstall
-    mkdir -p "$FONTDIR"
-    install
-}
-
-case $1 in
-    (check) check;;
-    (update) update;;
-    (install) install;;
-    (uninstall) uninstall;;
-esac
-
-# vim: ts=4 sts=4 sw=4 et
+main "$@"
+# vim: et ts=4 sts=4 sw=4 ft=sh

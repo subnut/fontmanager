@@ -1,0 +1,27 @@
+NAME="$(basename "$0")"
+FONTDIR="$BASEDIR/$NAME"
+
+untrap() { trap -           INT HUP TERM; }
+ontrap() { trap "$*; exit"  INT HUP TERM; }
+
+update() {
+    check >/dev/null
+    [ $? -eq 2 ] || uninstall
+    mkdir -p "$FONTDIR"
+    install
+}
+
+uninstall() {
+    rm -R "$FONTDIR"
+}
+
+main() {
+    case $1 in
+        (check) check;;
+        (update) update;;
+        (install) install;;
+        (uninstall) uninstall;;
+    esac
+}
+
+# vim: et ts=4 sts=4 sw=4 ft=sh
