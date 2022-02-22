@@ -4,11 +4,11 @@ cd "$(dirname "$0")"
 
 
 ## Config
-export FONTDIR="$HOME/.fonts"
+export BASEDIR="$HOME/.fonts"
 
 
 ## Dependencies
-[ -d "$FONTDIR" ] || mkdir "$FONTDIR"
+[ -d "$BASEDIR" ] || mkdir "$BASEDIR"
 command -v jq >/dev/null || {
   echo >&2 "jq: command not found"
   echo >&2 "Please install jq"
@@ -17,10 +17,24 @@ command -v jq >/dev/null || {
 
 
 case $1 in
-  check)
+  list)
     for module in modules/*; do
-      sh $module check || echo "$(basename $(dirname $module)) needs updating"
+      echo "${module#modules/}"
     done
+    exit;;
+
+  check)
+    ALL_GOOD=1
+    for module in modules/*; do
+      sh $module check >/dev/null || {
+        case $? in
+          (2) echo "${module#modules/} not installed";;
+          (1) echo "${module#modules/} needs updating";;
+        esac
+        ALL_GOOD=0
+      }
+    done
+    [ $ALL_GOOD = 1 ] && echo "All modules up-to-date"
     exit;;
 
   update)

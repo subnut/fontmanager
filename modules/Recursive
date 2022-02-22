@@ -1,0 +1,63 @@
+#!/bin/sh
+NAME="$(basename "$0")"
+FONTDIR="$BASEDIR/$NAME"
+
+URL='https://api.github.com/repos/arrowtype/recursive/releases/latest'
+RESPONSE="$(curl -sSL "$URL")"
+
+LATEST="$(printf '%s\n' "$RESPONSE" | jq .id)"
+TAGNAME="$(printf '%s\n' "$RESPONSE" | jq -r '.tag_name')"
+
+untrap() { trap -           INT HUP TERM; }
+ontrap() { trap "$*; exit"  INT HUP TERM; }
+
+check() {
+    [ ! -d "$FONTDIR" ] && {
+        echo Font not installed
+        exit 2
+    }
+    CURRENT="$(ls "$FONTDIR")"
+    CURRENT="${CURRENT%%-*}"
+    [ "$CURRENT" = "$LATEST" ]
+    return $?
+}
+
+install() {
+    DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r '.assets[0].browser_download_url')"
+    ZIPNAME="$(printf '%s\n' "$RESPONSE" | jq -r '.assets[0].name')"
+    DESTDIR="$FONTDIR/$LATEST-$TAGNAME"
+
+    ontrap rm -f "$ZIPNAME"
+    curl -o "$ZIPNAME" -L "$DOWNLOAD_URL"
+    unzip "$ZIPNAME"
+    rm "$ZIPNAME"
+    untrap
+
+    ontrap "rm -rf ${ZIPNAME%.zip}; rm -rf \"$DESTDIR\""
+    mkdir -p "$DESTDIR"
+    cp      "${ZIPNAME%.zip}"/Recursive_Desktop/*.ttf   "$DESTDIR"
+    cp      "${ZIPNAME%.zip}"/Recursive_Desktop/*.ttc   "$DESTDIR"
+    cp -R   "${ZIPNAME%.zip}"/Recursive_Code            "$DESTDIR"
+    rm -Rf  "${ZIPNAME%.zip}"
+    untrap
+}
+
+uninstall() {
+    rm -R "$FONTDIR"
+}
+
+update() {
+    check >/dev/null
+    [ $? -eq 2 ] || uninstall
+    mkdir -p "$FONTDIR"
+    install
+}
+
+case $1 in
+    (check) check;;
+    (update) update;;
+    (install) install;;
+    (uninstall) uninstall;;
+esac
+
+# vim: ts=4 sts=4 sw=4 et
