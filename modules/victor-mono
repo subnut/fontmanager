@@ -1,0 +1,23 @@
+name='Victor Mono'
+style=github
+repo=rubjo/victor-mono
+
+install() {
+    DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r .tarball_url)"
+    TARNAME="$(download "$DOWNLOAD_URL")"
+
+    ontrap rm -f "$TARNAME"
+    tar xf "$TARNAME"
+    rm "$TARNAME"
+    untrap
+
+    DIRNAME="$(ls -d rubjo-victor-mono*)"
+    ontrap "rm -rf \"$DIRNAME\" \"$DESTDIR\""
+    mkdir -p "$DESTDIR"
+    cp "$DIRNAME"/dist/woff2/* "$DESTDIR"
+    rm -Rf "$DIRNAME"
+    untrap
+}
+
+. common.lib
+# vim: et ts=4 sts=4 sw=4 ft=sh
