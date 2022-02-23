@@ -1,5 +1,5 @@
 name=Recursive
-style=github
+style=github-release
 repo=arrowtype/recursive
 
 install() {

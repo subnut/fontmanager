@@ -1,5 +1,5 @@
 name='Victor Mono'
-style=github
+style=github-release
 repo=rubjo/victor-mono
 
 install() {

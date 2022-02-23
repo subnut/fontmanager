@@ -7,23 +7,16 @@ ontrap() { trap "$*; exit"  INT HUP TERM; }
 
 download() {
     DOWNLOAD_URL="$1"
-
     FILENAME="$(
         eval 2>/dev/null "$(
             curl -sSIL "$DOWNLOAD_URL" |
             grep -i '^content-disposition: ' |
             tr -d '\r')" # remove CR from CRLF
         echo "$filename"
-    )"
-
-    [ -z "$FILENAME" ] &&
-    FILENAME="${DOWNLOAD_URL##*/}"
-
+    )"; FILENAME="${FILENAME:-${DOWNLOAD_URL##*/}}"
     ontrap rm -f "$FILENAME"
-    curl -o "$FILENAME" -L "$DOWNLOAD_URL"
-    untrap
-
-    echo "$FILENAME"
+    curl -L "$DOWNLOAD_URL" -o "$FILENAME"
+    untrap; echo "$FILENAME"
 }
 
 main() {
@@ -46,7 +39,7 @@ uninstall() {
     rm -R "$FONTDIR"
 }
 
-[ $style = github ] && {
+[ $style = github-release ] && {
     URL="https://api.github.com/repos/$repo/releases/latest"
     RESPONSE="$(curl -sSL "$URL")"
     LATEST="$(printf '%s\n' "$RESPONSE" | jq .id)"
