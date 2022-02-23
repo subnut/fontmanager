@@ -1,0 +1,26 @@
+name=Bitter
+style=github-release
+repo=solmatas/BitterPro
+
+install() {
+    DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r .tarball_url)"
+    TARNAME="$(download "$DOWNLOAD_URL")"
+
+    ontrap rm -f "$TARNAME"
+    tar xf "$TARNAME"
+    rm "$TARNAME"
+    untrap
+
+    DIRNAME="$(ls -d solmatas-BitterPro*)"
+    ontrap "rm -rf \"$DIRNAME\" \"$DESTDIR\""
+    mkdir -p "$DESTDIR/OTF"
+    mkdir -p "$DESTDIR/TTF"
+    cp "$DIRNAME"/fonts/otf/* "$DESTDIR/OTF"
+    cp "$DIRNAME"/fonts/ttf/* "$DESTDIR/TTF"
+    rm -Rf "$DIRNAME"
+    untrap
+}
+
+. common.lib
+# vim: et ts=4 sts=4 sw=4 ft=sh
+
