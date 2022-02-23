@@ -1,0 +1,24 @@
+name=Inter
+style=github-release
+repo=rsms/inter
+
+install() {
+    DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r '.assets[0].browser_download_url')"
+    ZIPNAME="$(download "$DOWNLOAD_URL")"
+    DIRNAME="${ZIPNAME%.zip}"
+
+    ontrap rm -f "$ZIPNAME"
+    unzip -q "$ZIPNAME" -d "$DIRNAME"
+    rm "$ZIPNAME"
+    untrap
+
+    ontrap "rm -rf \"$DIRNAME\" \"$DESTDIR\""
+    mkdir -p "$DESTDIR"
+    cp "$DIRNAME/Inter Hinted for Windows"/Desktop/* "$DESTDIR"
+    rm -Rf "$DIRNAME"
+    untrap
+}
+
+. common.lib
+# vim: et ts=4 sts=4 sw=4 ft=sh
+
