@@ -39,7 +39,7 @@ uninstall() {
     rm -R "$FONTDIR"
 }
 
-[ $style = github-release ] && {
+[ "$style" = github-release ] && {
     URL="https://api.github.com/repos/$repo/releases/latest"
     RESPONSE="$(curl -sSL "$URL")"
     LATEST="$(printf '%s\n' "$RESPONSE" | jq .id)"
