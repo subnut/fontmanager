@@ -6,7 +6,7 @@ install() {
     DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r .tarball_url)"
     TARNAME="$(download "$DOWNLOAD_URL")"
 
-    ontrap rm -f "$TARNAME"
+    ontrap rm -f "\"$TARNAME\""
     tar xf "$TARNAME"
     rm "$TARNAME"
     untrap

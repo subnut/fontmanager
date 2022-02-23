@@ -7,7 +7,7 @@ install() {
     ZIPNAME="$(download "$DOWNLOAD_URL")"
     DIRNAME="${ZIPNAME%.zip}"
 
-    ontrap rm -f "$ZIPNAME"
+    ontrap rm -f "\"$ZIPNAME\""
     unzip -q "$ZIPNAME" -d "$DIRNAME"
     rm "$ZIPNAME"
     untrap

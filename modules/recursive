@@ -6,7 +6,7 @@ install() {
     DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r '.assets[0].browser_download_url')"
     ZIPNAME="$(download "$DOWNLOAD_URL")"
 
-    ontrap rm -f "$ZIPNAME"
+    ontrap rm -f "\"$ZIPNAME\""
     unzip -q "$ZIPNAME"
     rm "$ZIPNAME"
     untrap

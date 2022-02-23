@@ -14,7 +14,7 @@ download() {
             tr -d '\r')" # remove CR from CRLF
         echo "$filename"
     )"; FILENAME="${FILENAME:-${DOWNLOAD_URL##*/}}"
-    ontrap rm -f "$FILENAME"
+    ontrap rm -f "\"$FILENAME\""
     curl -L "$DOWNLOAD_URL" -o "$FILENAME"
     untrap; echo "$FILENAME"
 }

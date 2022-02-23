@@ -8,7 +8,7 @@ check() {
 
 install() {
     DESTDIR="$FONTDIR"
-    ontrap rm -rf "$DESTDIR"
+    ontrap rm -rf "\"$DESTDIR\""
     mkdir -p "$DESTDIR"
     for variant in Bold BoldItalic Italic Regular
     do curl -o "$DESTDIR/LobsterTwo-$variant.ttf" -L "https://github.com/google/fonts/raw/main/ofl/lobstertwo/LobsterTwo-$variant.ttf"
