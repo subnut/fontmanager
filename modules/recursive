@@ -1,0 +1,25 @@
+name=Recursive
+style=github
+repo=arrowtype/recursive
+
+install() {
+    DOWNLOAD_URL="$(printf '%s\n' "$RESPONSE" | jq -r '.assets[0].browser_download_url')"
+    ZIPNAME="$(download "$DOWNLOAD_URL")"
+
+    ontrap rm -f "$ZIPNAME"
+    unzip -q "$ZIPNAME"
+    rm "$ZIPNAME"
+    untrap
+
+    DIRNAME="${ZIPNAME%.zip}"
+    ontrap "rm -rf \"$DIRNAME\" \"$DESTDIR\""
+    mkdir -p "$DESTDIR"
+    cp       "$DIRNAME"/Recursive_Desktop/*.ttf "$DESTDIR"
+    cp       "$DIRNAME"/Recursive_Desktop/*.ttc "$DESTDIR"
+    cp -R    "$DIRNAME"/Recursive_Code          "$DESTDIR"
+    rm -Rf   "$DIRNAME"
+    untrap
+}
+
+. common.lib
+# vim: et ts=4 sts=4 sw=4 ft=sh

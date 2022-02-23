@@ -1,8 +1,39 @@
 NAME="$(basename "$0")"
-FONTDIR="$BASEDIR/$NAME"
+PRETTY_NAME=${name:-$NAME}
+FONTDIR="$BASEDIR/$PRETTY_NAME"
 
 untrap() { trap -           INT HUP TERM; }
 ontrap() { trap "$*; exit"  INT HUP TERM; }
+
+download() {
+    DOWNLOAD_URL="$1"
+
+    FILENAME="$(
+        eval 2>/dev/null "$(
+            curl -sSIL "$DOWNLOAD_URL" |
+            grep -i '^content-disposition: ' |
+            tr -d '\r')" # remove CR from CRLF
+        echo "$filename"
+    )"
+
+    [ -z "$FILENAME" ] &&
+    FILENAME="${DOWNLOAD_URL##*/}"
+
+    ontrap rm -f "$FILENAME"
+    curl -o "$FILENAME" -L "$DOWNLOAD_URL"
+    untrap
+
+    echo "$FILENAME"
+}
+
+main() {
+    case $1 in
+        (check) check;;
+        (update) update;;
+        (install) install;;
+        (uninstall) uninstall;;
+    esac
+}
 
 update() {
     check >/dev/null
@@ -15,13 +46,24 @@ uninstall() {
     rm -R "$FONTDIR"
 }
 
-main() {
-    case $1 in
-        (check) check;;
-        (update) update;;
-        (install) install;;
-        (uninstall) uninstall;;
-    esac
+[ $style = github ] && {
+    URL="https://api.github.com/repos/$repo/releases/latest"
+    RESPONSE="$(curl -sSL "$URL")"
+    LATEST="$(printf '%s\n' "$RESPONSE" | jq .id)"
+    TAGNAME="$(printf '%s\n' "$RESPONSE" | jq -r .tag_name)"
+    DESTDIR="$FONTDIR/$LATEST-$TAGNAME"
+
+    check() {
+        [ ! -d "$FONTDIR" ] && {
+            echo Font not installed
+            exit 2
+        }
+        CURRENT="$(ls "$FONTDIR")"
+        CURRENT="${CURRENT%%-*}"
+        [ "$CURRENT" = "$LATEST" ]
+        return $?
+    }
 }
 
+main "$@"
 # vim: et ts=4 sts=4 sw=4 ft=sh
