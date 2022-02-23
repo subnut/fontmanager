@@ -14,7 +14,7 @@ install() {
     DIRNAME="$(ls -d rubjo-victor-mono*)"
     ontrap "rm -rf \"$DIRNAME\" \"$DESTDIR\""
     mkdir -p "$DESTDIR"
-    cp "$DIRNAME"/dist/woff2/* "$DESTDIR"
+    unzip -d "$DESTDIR" -q "$DIRNAME"/public/VictorMonoAll.zip 'OTF/*' 'TTF/*'
     rm -Rf "$DIRNAME"
     untrap
 }
